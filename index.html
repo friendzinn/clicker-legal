@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Desafio de Cliques do Lolo</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1e1e2f, #11111b);
+            height: 100vh;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #cdd6f4;
+        }
+
+        .container {
+            background-color: #181825;
+            padding: 30px 40px;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            text-align: center;
+            max-width: 400px;
+            width: 100%;
+            border: 2px solid #cba6f7;
+        }
+
+        h1 {
+            margin-top: 0;
+            margin-bottom: 5px;
+            color: #cba6f7;
+            font-size: 1.8rem;
+        }
+
+        .timer-box {
+            font-size: 1.2rem;
+            color: #f38ba8;
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
+
+        .counter {
+            font-size: 4.5rem;
+            font-weight: bold;
+            margin: 15px 0;
+            color: #89b4fa;
+            text-shadow: 0 0 10px rgba(137, 180, 250, 0.3);
+        }
+
+        button {
+            background-color: #cba6f7;
+            color: #11111b;
+            border: none;
+            padding: 15px 30px;
+            font-size: 1.3rem;
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: transform 0.1s, background-color 0.2s, box-shadow 0.2s;
+            width: 100%;
+            box-shadow: 0 4px 14px rgba(203, 166, 247, 0.4);
+        }
+
+        button:hover:not(:disabled) {
+            background-color: #b4befe;
+            box-shadow: 0 4px 20px rgba(180, 190, 254, 0.6);
+        }
+
+        button:active:not(:disabled) {
+            transform: scale(0.96);
+        }
+
+        button:disabled {
+            background-color: #45475a;
+            color: #7f849c;
+            cursor: not-allowed;
+            box-shadow: none;
+            transform: none;
+        }
+
+        .message {
+            margin-top: 25px;
+            font-size: 1.1rem;
+            font-weight: 500;
+            color: #a6e3a1;
+            min-height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .restart-btn {
+            background-color: #fab387;
+            margin-top: 15px;
+            font-size: 1rem;
+            padding: 10px 20px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Desafio de 10 Segundos!</h1>
+        <div class="timer-box" id="timer">Tempo: 10.0s</div>
+        <div class="counter" id="click-counter">0</div>
+        <button id="click-btn">CLIQUE PARA COMEÇAR!</button>
+        <div class="message" id="funny-message">O tempo começa a rodar no primeiro clique!</div>
+        <button id="restart-btn" class="restart-btn" style="display: none;">Jogar Novamente 🔄</button>
+    </div>
+
+    <script>
+        let count = 0;
+        let timeLeft = 10.0;
+        let timerId = null;
+        let gameActive = false;
+        let gameStarted = false;
+
+        const counterElement = document.getElementById('click-counter');
+        const buttonElement = document.getElementById('click-btn');
+        const messageElement = document.getElementById('funny-message');
+        const timerElement = document.getElementById('timer');
+        const restartElement = document.getElementById('restart-btn');
+
+        function startTimer() {
+            gameActive = true;
+            buttonElement.textContent = "CLIQUE CORRENDO!! 🔥";
+            messageElement.textContent = "Clica, clica, clica!!";
+            
+            timerId = setInterval(() => {
+                timeLeft -= 0.1;
+                if (timeLeft <= 0) {
+                    timeLeft = 0;
+                    clearInterval(timerId);
+                    endGame();
+                }
+                timerElement.textContent = `Tempo: ${timeLeft.toFixed(1)}s`;
+            }, 100);
+        }
+
+        function endGame() {
+            gameActive = false;
+            buttonElement.disabled = true;
+            buttonElement.textContent = "Fim de jogo!";
+            restartElement.style.display = "block";
+            
+            // Suas regras de frases personalizadas baseadas no resultado
+            let finalPhrase = "";
+            if (count === 0) {
+                finalPhrase = "tu largou o mouse :P";
+            } else if (count >= 1 && count <= 10) {
+                finalPhrase = "cara.. tu clicou 1 vez ou mais por segundo?";
+            } else if (count >= 11 && count <= 20) {
+                finalPhrase = "hm, esta melhorando...";
+            } else if (count >= 21 && count <= 30) {
+                finalPhrase = "boa! esta indo bem!";
+            } else if (count >= 31 && count <= 40) {
+                finalPhrase = "quase lá! confio em você!";
+            } else if (count >= 41 && count <= 50) {
+                finalPhrase = "BOA! você foi super bem!";
+            } else if (count >= 51 && count <= 60) {
+                finalPhrase = "cara... tu é um monstro.";
+            } else if (count >= 61 && count <= 85) {
+                finalPhrase = "q isso, tu é uma maquina!";
+            } else if (count > 85) {
+                finalPhrase = "tu é um jogador de gd? 🖥️⚡";
+            }
+
+            messageElement.textContent = finalPhrase;
+        }
+
+        buttonElement.addEventListener('click', () => {
+            if (!gameStarted) {
+                gameStarted = true;
+                startTimer();
+            }
+
+            if (gameActive) {
+                count++;
+                counterElement.textContent = count;
+            }
+        });
+
+        restartElement.addEventListener('click', () => {
+            count = 0;
+            timeLeft = 10.0;
+            gameActive = false;
+            gameStarted = false;
+            counterElement.textContent = "0";
+            timerElement.textContent = "Tempo: 10.0s";
+            buttonElement.disabled = false;
+            buttonElement.textContent = "CLIQUE PARA COMEÇAR!";
+            messageElement.textContent = "O tempo começa a rodar no primeiro clique!";
+            restartElement.style.display = "none";
+        });
+    </script>
+</body>
+</html>
